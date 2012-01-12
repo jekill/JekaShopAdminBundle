@@ -1,0 +1,77 @@
+{% extends '::admin.html.twig'%}
+
+{% block body_class%}products edit-product{% endblock%}
+
+{% block content%}
+
+<h1>{{'Creating product'|trans}}</h1>
+
+<ul class="tabs">
+    <li class="active"><a href="#basic">Basic</a></li>
+    <li><a href="#images">Images ({{product.images|length}})</a></li>
+    <li><a href="#options">{{'Options and Features'|trans}}</a></li>
+</ul>
+
+<form method="post">
+    <div class="tab-content">
+        <fieldset id="basic" class="tab-pane active">
+            <legend>{{'Basic'|trans}}</legend>
+            {{form_row(form.name)}}
+            {{form_row(form.slug)}}
+            {{form_row(form.price)}}
+            {{form_row(form.description)}}
+        </fieldset>
+        <fieldset id="images" class="tab-pane">
+            <legend>{{'Images'|trans}}</legend>
+        </fieldset>
+        <fieldset id="options" class="tab-pane">
+            <legend>{{'Options and Features'|trans}}</legend>
+        </fieldset>
+    </div>
+
+    <div class="actions">
+
+        <input type="submit" class="btn primary" value="{{'Save'|trans}}">
+    </div>
+
+</form>
+
+{% endblock content%}
+
+{% block javascripts%}
+<script type="text/javascript">
+    $(function () {
+        $('.tabs').tabs();
+    });
+
+</script>
+{% endblock javascripts%}
+
+{% block sidebar %}
+
+<ul class="sidebar-tools">
+    <li>
+        <a href="">&larr; {{'Product list'|trans}}</a>
+    </li>
+</ul>
+
+<div class="action_buttons">
+    <a class="btn success" href="{{path('admin_product_new')}}">{{'Create new product'}}</a>
+</div>
+
+<div class="well">
+    <div class="search">
+        <h5>Поиск</h5>
+
+        <form action="{{path('shop_admin_products')}}" method="get">
+            <input class="q name" type="text" name="name" value="" placeholder="{{'Product name'|trans}}">
+            <input type="submit" value="Search">
+
+        </form>
+    </div>
+
+</div>
+
+{{parent()}}
+
+{% endblock%}

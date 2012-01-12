@@ -1,0 +1,88 @@
+{% extends '::admin.html.twig'%}
+
+{% block body_class%}products{% endblock%}
+
+{% block content%}
+
+<div class="filter_tools">
+    Select category:
+    <select class="">
+        <option>All</option>
+    </select>
+    <input type="submit" value="Применить">
+</div>
+
+<table class="zebra-striped condensed-table bordered-table list">
+    <thead>
+    <tr>
+        <th class="checkbox"><a href="#">[+]</a></th>
+        <th class="image">{{'Image'|trans}}</th>
+        <th>{{'Product title'|trans}}</th>
+        <th class="price">{{'Price'|trans}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for prod in pager.getCurrentPageResults()%}
+    <tr>
+        <td class="checkbox clickable">
+            <input type="checkbox" value="product_id[]" value="{{prod.id}}">
+        </td>
+        <td class="image">
+            <div class="preview">
+                {% if prod.previewImage%}
+                    <a href="{{path('admin_product_edit',{'id':prod.id})}}#images"><img src="{{prod.previewImage.src|apply_filter('prod_preview_small')}}"/></a>
+                    <a href="{{path('admin_product_edit',{'id':prod.id})}}#images">Всего: {{prod.images|length}}</a>
+                {% else%}
+                    <a class="noimages" href="{{path('admin_product_edit',{'id':prod.id})}}#images">{{'has no images'|trans}}</a>
+                {% endif%}
+            </div>
+        </td>
+        <td class="name">
+            <div class="tools">
+                <a href="{{path('admin_product_edit',{'id':prod.id})}}">Edit</a>
+                | <a href="{{path('admin_product_edit',{'id':prod.id})}}">Disable</a>
+            </div>
+            <a href="{{path('admin_product_edit',{'id':prod.id})}}" class="title">{{prod.name}}</a>
+            <div class="categories">
+                <span class="h">Categories:</span>
+                <ul>
+                    {% for cat in prod.categories%}
+                    <li>{{cat.name}}</li>
+                    {% endfor%}
+                </ul>
+            </div>
+        </td>
+        <td class="price clickable">
+            {{prod.price}}
+        </td>
+
+    </tr>
+    {% endfor%}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {{ pagerfanta(pager,'twitter_bootstrap') }}
+</div>
+{% endblock content%}
+
+
+
+{%block sidebar%}
+
+<div class="action_buttons">
+    <a class="btn success" href="{{path('admin_product_new')}}">{{'Create new product'}}</a>
+</div>
+
+<div class="well">
+    <div class="search">
+    <h5>Поиск</h5>
+    <form action="{{path('shop_admin_products')}}" method="get">
+        <input class="q name" type="text" name="name" value="" placeholder="{{'Product name'|trans}}">
+        <input type="submit" value="Search">
+
+    </form>
+    </div>
+
+</div>
+{%endblock%}

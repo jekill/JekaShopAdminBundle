@@ -1,0 +1,132 @@
+body {
+    padding-top: 60px;
+}
+
+
+.sidebar-tools, .sidebar-tools li{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-tools{
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #EEE;
+}
+
+
+body.products{
+
+    .filter_tools{
+        margin: 10px 0 20px;
+    }
+
+
+
+    table.list{
+        td{
+            vertical-align: middle;
+        }
+        
+        td.name{
+            min-width: 400px;
+            vertical-align: top;
+            a.title{
+                font-size: 18px;
+                margin: 10px 0;
+            }
+
+            .tools{
+                margin: 10px 0;
+                a{
+                    color: #AAA;
+                }
+            }
+
+            .categories{
+                margin: 10px 0;
+                font-size: 10px;
+                .h{
+                    float: left;
+                    margin-right: 3px;
+                    color: #AAA;
+                }
+                ul, li{
+                    margin: 0;
+                    padding: 0;
+                    list-style: none;
+                }
+                ul{
+                    display: inline-block;
+                }
+                ul li {
+                    float: left;
+                    margin-right: 10px;
+                    &:after{
+                        content: ',';
+                    }
+                    &:last-child:after{
+                        content: '';
+                    }
+                }
+            }
+        }
+        .checkbox{
+            width: 20px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        td.clickable:hover{
+            background: #EEFFEE;
+            cursor: pointer;
+        }
+        th.image{ text-align: center; }
+        td.image{
+            width: 100px;
+            .preview{
+                width: 90px;
+                min-height: 90px;
+                padding: 3px;
+                background: #FFF;
+                border: 1px solid #EEE;
+                text-align: center;
+                a{
+                    color: #CCC;
+                    font-size: 10px;
+                }
+                .noimages{
+                    display: table-cell;
+                    height: 90px;
+                    width: 90px;
+                    vertical-align: middle;
+                    text-align: center;
+                }
+            }
+        }
+
+        td.price, th.price{
+              text-align: center;
+        }
+        td.price{
+            font-size: 18px;
+          
+        }
+    }
+
+}
+
+
+.sidebar {
+    .search{
+        input.q{
+            width: 100px;
+        }
+    }
+
+    .action_buttons{
+        margin: 10px 0 19px;
+    }
+}
+
+
