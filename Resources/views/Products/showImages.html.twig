@@ -1,0 +1,28 @@
+<div class="show-images">
+<div class="help">The first image is preview image</div>
+<br/>
+<ul class="images-list" >
+    {% for image in product.imagesOrderedArray%}
+        <li id="image_{{image.id}}">
+            <div class="move">&nbsp;</div>
+            <img src="{{image.src|apply_filter('prod_thumb')}}"/>
+            <div class="tools">
+                del | real size |
+            </div>
+        </li>
+    {% endfor%}
+</ul>
+    <script type="text/javascript">
+        $(function(){
+           $('.images-list')
+                   .sortable({
+                       handle:'.move',
+                       update:function(event,ui){
+                           var data = $('.images-list').sortable('serialize', {});
+                           $.post('{{path('shop_admin_images_sort')}}',data,function(){});
+
+                       }
+                   }).disableSelection();
+        });
+    </script>
+</div>

@@ -6,6 +6,12 @@
 
 <h1>{{'Creating product'|trans}}</h1>
 
+{% if product.id %}
+<div class="show-on-site-link">
+<a href="{{path('shop_product',{'product_slug':product.slug,'category_slug':product.firstCategory.slug})}}">Смотреть товар на сайте</a>
+</div>
+{% endif%}
+
 <ul class="tabs">
     <li class="active"><a href="#basic">Basic</a></li>
     <li><a href="#images">Images ({{product.images|length}})</a></li>
@@ -23,6 +29,12 @@
         </fieldset>
         <fieldset id="images" class="tab-pane">
             <legend>{{'Images'|trans}}</legend>
+
+            {% render 'JekaShopAdminBundle:Products:showImages' with {'product':product} %}
+
+            {{form_row(form.uploaded_image)}}
+
+
         </fieldset>
         <fieldset id="options" class="tab-pane">
             <legend>{{'Options and Features'|trans}}</legend>
@@ -42,36 +54,23 @@
 <script type="text/javascript">
     $(function () {
         $('.tabs').tabs();
+
+        if (window.location.hash!="")
+        {
+
+            $(".tabs a[href='"+window.location.hash+"']").click();
+        }
+
     });
 
 </script>
 {% endblock javascripts%}
 
 {% block sidebar %}
-
-<ul class="sidebar-tools">
-    <li>
-        <a href="">&larr; {{'Product list'|trans}}</a>
-    </li>
-</ul>
-
-<div class="action_buttons">
-    <a class="btn success" href="{{path('admin_product_new')}}">{{'Create new product'}}</a>
-</div>
-
-<div class="well">
-    <div class="search">
-        <h5>Поиск</h5>
-
-        <form action="{{path('shop_admin_products')}}" method="get">
-            <input class="q name" type="text" name="name" value="" placeholder="{{'Product name'|trans}}">
-            <input type="submit" value="Search">
-
-        </form>
-    </div>
-
-</div>
-
-{{parent()}}
-
+    <ul class="sidebar-tools">
+        <li>
+            <a href="{{path('shop_admin_products')}}">&larr; {{'Product list'|trans}}</a>
+        </li>
+    </ul>
+    {% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig'%}
 {% endblock%}

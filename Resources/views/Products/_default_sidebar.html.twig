@@ -1,0 +1,16 @@
+<div class="action_buttons">
+    <a class="btn success" href="{{path('shop_admin_product_new')}}">{{'Create new product'}}</a>
+</div>
+
+<div class="well">
+    <div class="search">
+        <h5>Поиск</h5>
+
+        <form action="{{path('shop_admin_products')}}" method="get">
+            <input class="q name" type="text" name="name" value="" placeholder="{{'Product name'|trans}}">
+            <input type="submit" value="Search">
+
+        </form>
+    </div>
+
+</div>

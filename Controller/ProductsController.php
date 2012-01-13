@@ -2,6 +2,7 @@
 namespace Jeka\ShopAdminBundle\Controller;
 
 
+use \Symfony\Component\HttpFoundation\Response;
 use \Application\Vespolina\ProductBundle\Form\Type\ProductFormExtendedType;
 use \Application\Vespolina\ProductBundle\Document\Product;
 use \Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -39,7 +40,39 @@ class ProductsController extends Controller
     }
 
     /**
-     * @Route("/products/new", name="admin_product_new")
+     * @param \Application\Vespolina\ProductBundle\Document\Product $product
+     * @Template
+     */
+    public function showImagesAction(Product $product)
+    {
+        return array(
+            'product' => $product
+        );
+    }
+
+    /**
+     * @Route("/images-sort", name="shop_admin_images_sort")
+     */
+    public function imagesSortAction()
+    {
+        $images = $this->getRequest()->get('image');
+        $images = array_reverse($images);
+        /** @var $image_manager \Jeka\ImageBundle\Document\ImageManager */
+        $image_manager = $this->get('jeka.image_manager');
+        /** @var $d_manager \Doctrine\ODM\MongoDB\DocumentManager */
+        $d_manager = $this->get('doctrine.odm.mongodb.document_manager');
+        foreach ($images as $index => $id)
+        {
+            $image = $image_manager->findImageById($id);
+            $image->setPos($index);
+            $d_manager->persist($image);
+        }
+        $d_manager->flush();
+        return new Response('OK', 200, array('Content-type' => 'text/plain'));
+    }
+
+    /**
+     * @Route("/products/new", name="shop_admin_product_new")
      */
     public function newAction()
     {
@@ -49,16 +82,16 @@ class ProductsController extends Controller
 
     /**
      * @param $id
-     * @Route("/products/{id}/edit", name="admin_product_edit")
+     * @Route("/products/{id}/edit", name="shop_admin_product_edit")
      * @Template
      */
     public function editAction($id)
     {
         $product = null;
-        if (is_object($id)){
+        if (is_object($id)) {
             $product = $id;
         }
-        else{
+        else {
             $product = $this->get('vespolina.product_manager')->findProductById($id);
         }
 
@@ -66,8 +99,8 @@ class ProductsController extends Controller
 
 
         return array(
-            'form'=>$form->createView(),
-            'product'=>$product
+            'form' => $form->createView(),
+            'product' => $product
         );
     }
 }

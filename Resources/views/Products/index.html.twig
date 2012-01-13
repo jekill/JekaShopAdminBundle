@@ -30,19 +30,19 @@
         <td class="image">
             <div class="preview">
                 {% if prod.previewImage%}
-                    <a href="{{path('admin_product_edit',{'id':prod.id})}}#images"><img src="{{prod.previewImage.src|apply_filter('prod_preview_small')}}"/></a>
-                    <a href="{{path('admin_product_edit',{'id':prod.id})}}#images">Всего: {{prod.images|length}}</a>
+                    <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}#images"><img src="{{prod.previewImage.src|apply_filter('prod_preview_small')}}"/></a>
+                    <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}#images">Всего: {{prod.images|length}}</a>
                 {% else%}
-                    <a class="noimages" href="{{path('admin_product_edit',{'id':prod.id})}}#images">{{'has no images'|trans}}</a>
+                    <a class="noimages" href="{{path('shop_admin_product_edit',{'id':prod.id})}}#images">{{'has no images'|trans}}</a>
                 {% endif%}
             </div>
         </td>
         <td class="name">
             <div class="tools">
-                <a href="{{path('admin_product_edit',{'id':prod.id})}}">Edit</a>
-                | <a href="{{path('admin_product_edit',{'id':prod.id})}}">Disable</a>
+                <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}">Edit</a>
+                | <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}">Disable</a>
             </div>
-            <a href="{{path('admin_product_edit',{'id':prod.id})}}" class="title">{{prod.name}}</a>
+            <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}" class="title">{{prod.name}}</a>
             <div class="categories">
                 <span class="h">Categories:</span>
                 <ul>
@@ -70,19 +70,6 @@
 
 {%block sidebar%}
 
-<div class="action_buttons">
-    <a class="btn success" href="{{path('admin_product_new')}}">{{'Create new product'}}</a>
-</div>
+{% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig'%}
 
-<div class="well">
-    <div class="search">
-    <h5>Поиск</h5>
-    <form action="{{path('shop_admin_products')}}" method="get">
-        <input class="q name" type="text" name="name" value="" placeholder="{{'Product name'|trans}}">
-        <input type="submit" value="Search">
-
-    </form>
-    </div>
-
-</div>
 {%endblock%}
