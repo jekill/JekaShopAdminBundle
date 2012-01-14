@@ -7,7 +7,9 @@
             <div class="move">&nbsp;</div>
             <img src="{{image.src|apply_filter('prod_thumb')}}"/>
             <div class="tools">
-                del | real size |
+                <a href="#" class="remove">{{'remove'|trans}}</a><br/>
+                <a href="{{image.src}}" class="realsize image">{{'real size'|trans}}</a> |
+                <a href="{{image.src|apply_filter('prod_preview')}}" class="thumb image">{{'main thumb'|trans}}</a>
             </div>
         </li>
     {% endfor%}

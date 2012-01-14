@@ -8,7 +8,7 @@
 
 {% if product.id %}
 <div class="show-on-site-link">
-<a href="{{path('shop_product',{'product_slug':product.slug,'category_slug':product.firstCategory.slug})}}">Смотреть товар на сайте</a>
+<a href="{{path('shop_product',{'product_slug':product.slug,'category_slug':product.firstCategory.slug})}}">{{'This product on the site'|trans}}</a>
 </div>
 {% endif%}
 

@@ -140,11 +140,15 @@ body.products{
         li{
             float: left;
             border: 1px solid #EEE;
-            margin: 0 5px 5px 0 ;
+            margin: 0 10px 10px 0 ;
             width: 120px;
-            height: 140px;
+            padding: 10px;
+            height: 160px;
             background: #FFF;
             position: relative;
+            &:first-child{
+                border: 2px dashed #FFCACA;
+            }
             &:hover .move{
                 border: 1px solid rgba(255,0,0,.3);
                 background-color: rgba(128,128,128,.3);
@@ -156,6 +160,10 @@ body.products{
                 height: 30px;
                 z-index: 100;
                 position: absolute;
+            }
+
+            .tools{
+                font-size: 10px;
             }
         }
     }
