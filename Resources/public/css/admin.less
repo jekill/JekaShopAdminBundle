@@ -146,20 +146,29 @@ body.products{
             height: 160px;
             background: #FFF;
             position: relative;
+
             &:first-child{
                 border: 2px dashed #FFCACA;
             }
             &:hover .move{
                 border: 1px solid rgba(255,0,0,.3);
-                background-color: rgba(128,128,128,.3);
+                background-color: rgba(128,128,128,.4);
+                display: block;
 
             }
             .move{
+                border-radius: 3px;
+                display: none;
                 cursor: move;
                 width: 30px;
-                height: 30px;
+                padding: 5px;
                 z-index: 100;
                 position: absolute;
+                text-align: center;
+                vertical-align: middle;
+                font-size: 20px;
+                font-weight: bold;
+                color: #FFF;
             }
 
             .tools{
