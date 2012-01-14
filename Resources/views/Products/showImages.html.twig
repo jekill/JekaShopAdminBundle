@@ -8,8 +8,8 @@
             <img src="{{image.src|apply_filter('prod_thumb')}}"/>
             <div class="tools">
                 <a href="#" class="remove">{{'remove'|trans}}</a><br/>
-                <a href="{{image.src}}" class="realsize image">{{'real size'|trans}}</a> |
-                <a href="{{image.src|apply_filter('prod_preview')}}" class="thumb image">{{'main thumb'|trans}}</a>
+                <a href="{{image.src}}" target="_blank" class="realsize image">{{'real size'|trans}}</a> |
+                <a href="{{image.src|apply_filter('prod_preview')}}" rel="prettyImage" class="thumb image">{{'main thumb'|trans}}</a>
             </div>
         </li>
     {% endfor%}

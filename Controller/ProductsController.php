@@ -87,16 +87,37 @@ class ProductsController extends Controller
      */
     public function editAction($id)
     {
+        /** @var $product Product */
         $product = null;
+        /** @var $product_manager \Jeka\ShopBundle\Document\ProductManager */
+        $product_manager = $this->get('vespolina.product_manager');
+
         if (is_object($id)) {
             $product = $id;
+            $id = $product->getId();
         }
         else {
-            $product = $this->get('vespolina.product_manager')->findProductById($id);
+            $product = $product_manager->findProductById($id);
         }
 
+        /** @var $form \Symfony\Component\Form\Form */
         $form = $this->createForm(new ProductFormExtendedType(), $product);
 
+        /** @var $req \Symfony\Component\HttpFoundation\Request */
+        $req = $this->getRequest();
+
+        if ($req->getMethod() == 'POST') {
+            $form->bindRequest($req);
+            if ($form->isValid()) {
+                $product_manager->updateProduct($product);
+                /** @var $session \Symfony\Component\HttpFoundation\Session */
+                $session = $this->get('session');
+                $session->setFlash('success', 'The product is saved successfully');
+                $this->redirect(
+                    $this->generateUrl('shop_admin_product_edit', array('id' => $product->getId()))
+                );
+            }
+        }
 
         return array(
             'form' => $form->createView(),

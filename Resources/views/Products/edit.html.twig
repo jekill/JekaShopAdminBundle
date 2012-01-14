@@ -1,4 +1,4 @@
-{% extends '::admin.html.twig'%}
+{% extends 'JekaShopAdminBundle::admin-layout.html.twig'%}
 
 {% block body_class%}products edit-product{% endblock%}
 
@@ -8,7 +8,7 @@
 
 {% if product.id %}
 <div class="show-on-site-link">
-<a href="{{path('shop_product',{'product_slug':product.slug,'category_slug':product.firstCategory.slug})}}">{{'This product on the site'|trans}}</a>
+    <a href="{{path('shop_product',{'product_slug':product.slug,'category_slug':product.firstCategory.slug})}}">{{'This product on the site'|trans}}</a>
 </div>
 {% endif%}
 
@@ -17,8 +17,9 @@
     <li><a href="#images">Images ({{product.images|length}})</a></li>
     <li><a href="#options">{{'Options and Features'|trans}}</a></li>
 </ul>
-
-<form method="post">
+{{form_errors(form)}}
+<form action="{{ path('shop_admin_product_'~(product.id?'edit':'new'),{'id':product.id}) }}" {{ form_enctype(form) }} method="POST" class="product_edit">
+    {{ form_row(form._token) }}
     <div class="tab-content">
         <fieldset id="basic" class="tab-pane active">
             <legend>{{'Basic'|trans}}</legend>
@@ -38,6 +39,10 @@
         </fieldset>
         <fieldset id="options" class="tab-pane">
             <legend>{{'Options and Features'|trans}}</legend>
+
+            {#{{ form_row(form.features) }}#}
+            <a href="#" class="addFieldLink" id="features_link">Add Feature</a>
+
         </fieldset>
     </div>
 
@@ -52,14 +57,29 @@
 
 {% block javascripts%}
 <script type="text/javascript">
+
     $(function () {
         $('.tabs').tabs();
 
-        if (window.location.hash!="")
-        {
+        if (window.location.hash != "") {
 
-            $(".tabs a[href='"+window.location.hash+"']").click();
+            $(".tabs a[href='" + window.location.hash + "']").click();
         }
+
+
+        function add(collection) {
+            var collectionName = '#vespolina_product_form_' + collection;
+            alert(collectionName);
+            var collectionHolder = $(collectionName);
+            var prototype = collectionHolder.attr('data-prototype');
+            form = prototype.replace(/\$\$name\$\$/g, collectionHolder.children().length);
+            collectionHolder.append(form);
+        }
+
+        $('a.addFieldLink').live('click', function (event) {
+            event.preventDefault();
+            add($(this).attr('id').slice(0, -5));
+        });
 
     });
 
@@ -67,10 +87,10 @@
 {% endblock javascripts%}
 
 {% block sidebar %}
-    <ul class="sidebar-tools">
-        <li>
-            <a href="{{path('shop_admin_products')}}">&larr; {{'Product list'|trans}}</a>
-        </li>
-    </ul>
-    {% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig'%}
-{% endblock%}
+<ul class="sidebar-tools">
+    <li>
+        <a href="{{path('shop_admin_products')}}">&larr; {{'Product list'|trans}}</a>
+    </li>
+</ul>
+{% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig'%}
+        {% endblock%}
