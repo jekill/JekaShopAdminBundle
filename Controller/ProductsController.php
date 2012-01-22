@@ -113,7 +113,7 @@ class ProductsController extends Controller
                 /** @var $session \Symfony\Component\HttpFoundation\Session */
                 $session = $this->get('session');
                 $session->setFlash('success', 'The product is saved successfully');
-                $this->redirect(
+                return $this->redirect(
                     $this->generateUrl('shop_admin_product_edit', array('id' => $product->getId()))
                 );
             }

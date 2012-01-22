@@ -12,11 +12,14 @@
 </div>
 {% endif%}
 
+{% include 'JekaShopAdminBundle::_flash.html.twig'%}
+
 <ul class="tabs">
     <li class="active"><a href="#basic">Basic</a></li>
     <li><a href="#images">Images ({{product.images|length}})</a></li>
     <li><a href="#options">{{'Options and Features'|trans}}</a></li>
 </ul>
+
 {{form_errors(form)}}
 <form action="{{ path('shop_admin_product_'~(product.id?'edit':'new'),{'id':product.id}) }}" {{ form_enctype(form) }} method="POST" class="product_edit">
     {{ form_row(form._token) }}
@@ -40,8 +43,12 @@
         <fieldset id="options" class="tab-pane">
             <legend>{{'Options and Features'|trans}}</legend>
 
-            {#{{ form_row(form.features) }}#}
-            <a href="#" class="addFieldLink" id="features_link">Add Feature</a>
+            Disabled
+
+            {#{{ form_row(form.features) }} <a href="#" class="addFieldLink" id="features_link">Add Feature</a>#}
+            {#{{ form_row(form.identifiers) }} <a href="#" class="addFieldLink" id="identifiers_identifiers_link" />Add Identifier</a>#}
+            {#{{ form_row(form.options) }} <a href="#" class="addFieldLink" id="identifiers_options_options_link" />Add Options</a>#}
+            {#{{form_rest(form)}}#}
 
         </fieldset>
     </div>
@@ -68,10 +75,11 @@
 
 
         function add(collection) {
-            var collectionName = '#vespolina_product_form_' + collection;
-            alert(collectionName);
+            var collectionName = '#vespolina_product_' + collection;
+            //alert(collectionName);
             var collectionHolder = $(collectionName);
             var prototype = collectionHolder.attr('data-prototype');
+            //alert(prototype);
             form = prototype.replace(/\$\$name\$\$/g, collectionHolder.children().length);
             collectionHolder.append(form);
         }
