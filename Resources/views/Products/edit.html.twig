@@ -7,9 +7,9 @@
 <h1>{{'Creating product'|trans}}</h1>
 
 {% if product.id %}
-<div class="show-on-site-link">
+<dir class="show-on-site-link">
     <a href="{{path('shop_product',{'product_slug':product.slug,'category_slug':product.firstCategory.slug})}}">{{'This product on the site'|trans}}</a>
-</div>
+</dir>
 {% endif%}
 
 {% include 'JekaShopAdminBundle::_flash.html.twig'%}
@@ -26,25 +26,16 @@
     <div class="tab-content">
         <fieldset id="basic" class="tab-pane active">
             <legend>{{'Basic'|trans}}</legend>
-            {{form_row(form.name)}}
-            {{form_row(form.slug)}}
-            {{form_row(form.price)}}
-            {{form_row(form.description)}}
+            {% include 'JekaShopAdminBundle:Products:_fields_basic.html.twig' %}
         </fieldset>
         <fieldset id="images" class="tab-pane">
             <legend>{{'Images'|trans}}</legend>
-
             {% render 'JekaShopAdminBundle:Products:showImages' with {'product':product} %}
-
             {{form_row(form.uploaded_image)}}
-
-
         </fieldset>
         <fieldset id="options" class="tab-pane">
             <legend>{{'Options and Features'|trans}}</legend>
-
             Disabled
-
             {#{{ form_row(form.features) }} <a href="#" class="addFieldLink" id="features_link">Add Feature</a>#}
             {#{{ form_row(form.identifiers) }} <a href="#" class="addFieldLink" id="identifiers_identifiers_link" />Add Identifier</a>#}
             {#{{ form_row(form.options) }} <a href="#" class="addFieldLink" id="identifiers_options_options_link" />Add Options</a>#}
@@ -54,7 +45,6 @@
     </div>
 
     <div class="actions">
-
         <input type="submit" class="btn primary" value="{{'Save'|trans}}">
     </div>
 
@@ -63,6 +53,12 @@
 {% endblock content%}
 
 {% block javascripts%}
+{{parent()}}
+<script type="text/javascript" src="/bundles/jekashopadmin/js/pagedown/Markdown.Converter.js"></script>
+{#<script type="text/javascript" src="/bundles/jekashopadmin/js/pagedown/Markdown.Sanitizer.js"></script>#}
+{#<script type="text/javascript" src="/bundles/jekashopadmin/js/pagedown/Markdown.Editor.js"></script>#}
+
+
 <script type="text/javascript">
 
     $(function () {
@@ -96,9 +92,10 @@
 
 {% block sidebar %}
 <ul class="sidebar-tools">
-    <li>
+    <li class="back">
         <a href="{{path('shop_admin_products')}}">&larr; {{'Product list'|trans}}</a>
     </li>
 </ul>
 {% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig'%}
-        {% endblock%}
+{% endblock%}
+

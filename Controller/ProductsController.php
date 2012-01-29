@@ -83,7 +83,6 @@ class ProductsController extends Controller
     /**
      * @param $id
      * @Route("/products/{id}/edit", name="shop_admin_product_edit")
-     * @Template
      */
     public function editAction($id)
     {
@@ -119,9 +118,9 @@ class ProductsController extends Controller
             }
         }
 
-        return array(
+        return $this->render('JekaShopAdminBundle:Products:edit.html.twig',array(
             'form' => $form->createView(),
             'product' => $product
-        );
+        ));
     }
 }

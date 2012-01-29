@@ -1,0 +1,60 @@
+{% extends 'JekaShopAdminBundle::admin-layout.html.twig'%}
+
+{% block body_class%}categories{% endblock%}
+
+{% block content%}
+
+<table class="list" style="max-width: 750px;">
+    <thead>
+    <tr>
+        <th>{{'Category name'|trans}}</th>
+        <th>{{'Pos.'|trans}}</th>
+        <th>{{'Vis.'|trans}}</th>
+        <th>{{'Slug'|trans}}</th>
+        <th>x</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for cat in tree%}
+        <tr id="cat_{{cat.id}}" class="{{cat.parent?"child-of-cat_"~cat.parent.id:''}}">
+            <td>
+                <a href="{{path('shop_admin_categories_edit',{'id':cat.id})}}">{{cat.name}}</a>
+            </td>
+            <td>
+                <a class="arrow" href="#">⇑</a>
+                <a class="arrow" href="#">⇓</a>
+            </td>
+            <td><a href="#">v</a></td>
+            <td>{{cat.slug}}</td>
+            <td>
+                <a href="{{path('shop_admin_categories_edit',{'id':cat.id})}}">Edit</a>
+            </td>
+        </tr>
+    {% endfor%}
+
+    </tbody>
+</table>
+
+{% endblock content%}
+
+{%block sidebar%}
+{% include 'JekaShopAdminBundle:Categories:_default_sidebar.html.twig'%}
+{%endblock%}
+
+{% block stylesheets%}
+<link href="/bundles/jekashopadmin/js/tree/jquery.treeTable.css" rel="stylesheet" type="text/css"/>
+{% endblock stylesheets%}
+
+{% block javascripts%}
+<script type="text/javascript" src="/bundles/jekashopadmin/js/tree/jquery.treeTable.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("table.list").treeTable({
+            initialState: 'expanded'
+        });
+    });
+</script>
+{% endblock javascripts%}
+
+

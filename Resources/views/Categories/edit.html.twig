@@ -1,0 +1,43 @@
+{% extends 'JekaShopAdminBundle::admin-layout.html.twig'%}
+
+{% block body_class%}categories edit-category{% endblock%}
+
+{% block content%}
+
+<h1>{{'Creating category'|trans}}</h1>
+
+{% if category.id %}
+<dir class="show-on-site-link">
+    <a href="{{path('shop_category',{'slug':category.slug})}}">{{'This category on the site'|trans}}</a>
+</dir>
+{% endif%}
+
+{% include 'JekaShopAdminBundle::_flash.html.twig'%}
+
+
+{{form_errors(form)}}
+<form action="{{category.id?path('shop_admin_categories_edit',{'id':category.id}):path('shop_admin_categories_new')}}"
+      method="post"
+        {{form_enctype(form)}}>
+    {{form_widget(form)}}
+    {{form_rest(form)}}
+    <div class="actions">
+        <input type="submit" value="{{'Save'|trans}}">
+    </div>
+
+</form>
+
+{% endblock content%}
+
+
+{% block sidebar %}
+<ul class="sidebar-tools">
+    <li class="back">
+        <a href="{{path('shop_admin_categories')}}">&larr; {{'Categories list'|trans}}</a>
+    </li>
+</ul>
+{% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig'%}
+{% endblock%}
+
+
+

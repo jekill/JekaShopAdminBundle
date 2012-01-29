@@ -16,6 +16,7 @@
             'js/jquery-1.7.1.js'
             'js/jquery-ui-1.8.16.custom.min.js'
             '@MopaBootstrapBundle/Resources/bootstrap/js/bootstrap-tabs.js'
+            '@MopaBootstrapBundle/Resources/bootstrap/js/bootstrap-modal.js'
 
     %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -38,7 +39,7 @@
         <li class="active">
             <a href="{{path('shop_admin_products')}}">{{'Products'|trans}}</a>
         </li>
-        <li><a href="#about">{{'Categories'|trans}}</a></li>
+        <li><a href="{{path('shop_admin_categories')}}">{{'Categories'|trans}}</a></li>
         <li><a href="#contact">{{'Orders'|trans}} (<span class="alarm" style="color: #ff0000;">10</span>)</a></li>
         <li><a href="#contact">{{'Users'|trans}}</a></li>
           <li><a href="#contact">{{'Settings'|trans}}</a></li>
