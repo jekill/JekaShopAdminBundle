@@ -17,26 +17,39 @@
 
 {{form_errors(form)}}
 <form action="{{category.id?path('shop_admin_categories_edit',{'id':category.id}):path('shop_admin_categories_new')}}"
-      method="post"
-        {{form_enctype(form)}}>
+      method="post" {{form_enctype(form)}}>
     {{form_widget(form)}}
     {{form_rest(form)}}
     <div class="actions">
-        <input type="submit" value="{{'Save'|trans}}">
+        <input type="submit" value="{{'Save'|trans}}" class="btn ">
+        <div class="remove">
+            <a href="#" >{{'remove'| trans}}</a>
+        </div>
     </div>
-
 </form>
+
+<script type="text/javascript">
+    $(function(){
+       $('.actions .remove a').click(function(){
+           if (confirm('Remove category?'))
+           {
+               window.location.href="{{path('shop_admin_categories_remove',{'id':category.id})}}";
+           }
+           return false;
+       })
+    });
+</script>
 
 {% endblock content%}
 
 
 {% block sidebar %}
-<ul class="sidebar-tools">
-    <li class="back">
-        <a href="{{path('shop_admin_categories')}}">&larr; {{'Categories list'|trans}}</a>
-    </li>
-</ul>
-{% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig'%}
+    <ul class="sidebar-tools">
+        <li class="back">
+            <a href="{{path('shop_admin_categories')}}">&larr; {{'Categories list'|trans}}</a>
+        </li>
+    </ul>
+    {% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig'%}
 {% endblock%}
 
 

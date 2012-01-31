@@ -17,15 +17,23 @@
     <tbody>
 
     {% for cat in tree%}
+        {% set neighbours = cat.parent ? category_manager.findChildren(cat.parent) : false%}
+        {% set pos = cat.position %}
         <tr id="cat_{{cat.id}}" class="{{cat.parent?"child-of-cat_"~cat.parent.id:''}}">
             <td>
                 <a href="{{path('shop_admin_categories_edit',{'id':cat.id})}}">{{cat.name}}</a>
             </td>
             <td>
-                <a class="arrow" href="#">⇑</a>
-                <a class="arrow" href="#">⇓</a>
+                {% if pos>0%}
+                    <a class="arrow" href="{{path('shop_admin_categories_position',{'id':cat.id,'direction':'up'})}}">⇑</a>
+                {% endif%}
+                {% if cat.position+1<neighbours|length%}
+                <a class="arrow" href="{{path('shop_admin_categories_position',{'id':cat.id,'direction':'down'})}}">⇓</a>
+                {% endif%}
             </td>
-            <td><a href="#">v</a></td>
+            <td class="{{(cat.isHidden?'unvisible':'visible')|trans}}">
+                <span title="{{(cat.isHidden?'Unvisible category':'Visible category')|trans}}">{{(cat.isHidden?'Unvis.':'Vis.')|trans}}</span>
+            </td>
             <td>{{cat.slug}}</td>
             <td>
                 <a href="{{path('shop_admin_categories_edit',{'id':cat.id})}}">Edit</a>

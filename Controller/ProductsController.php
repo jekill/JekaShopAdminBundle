@@ -91,12 +91,15 @@ class ProductsController extends Controller
         /** @var $product_manager \Jeka\ShopBundle\Document\ProductManager */
         $product_manager = $this->get('vespolina.product_manager');
 
+
         if (is_object($id)) {
             $product = $id;
             $id = $product->getId();
         }
         else {
+            /** @var $product Product */
             $product = $product_manager->findProductById($id);
+
         }
 
         /** @var $form \Symfony\Component\Form\Form */
@@ -109,6 +112,21 @@ class ProductsController extends Controller
             $form->bindRequest($req);
             if ($form->isValid()) {
                 $product_manager->updateProduct($product);
+
+                //print_r($req->files);exit;
+                /** @var $uploaded_image \Symfony\Component\HttpFoundation\File\UploadedFile */
+                if ($uploaded_image = $product->getUploadedImage())
+                {
+                    //var_dump($uploaded_image->getPathname());exit;
+                    /** @var $im \Jeka\ImageBundle\Document\ImageManager */
+                    $im = $this->get('jeka.image_manager');
+                    $image = $im->createImageFromFile($uploaded_image->getPathname());
+                    $image->setPos(-1);
+                    $product->addImages($image);
+                    $product_manager->updateProduct($product);
+                }
+
+
                 /** @var $session \Symfony\Component\HttpFoundation\Session */
                 $session = $this->get('session');
                 $session->setFlash('success', 'The product is saved successfully');
