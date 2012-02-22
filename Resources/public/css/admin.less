@@ -1,6 +1,8 @@
-@import '../../../../../../vendor/bundles/Mopa/BootstrapBundle/Resources/bootstrap/lib/mixins.less';
+@import '../../../../../../vendor/bundles/Mopa/BootstrapBundle/Resources/bootstrap/less/bootstrap.less';
 @import '../../../../ShopBundle/Resources/less/product.less';
 @import '../../../../ShopBundle/Resources/less/mixins.less';
+@import '../../../../ShopBundle/Resources/less/basic.less';
+
 
 
 body {
@@ -46,6 +48,12 @@ body.products{
                 margin: 10px 0;
                 a{
                     color: #AAA;
+                }
+                .disabled{
+                    color: green;
+                }
+                .enabled{
+                    color: red;
                 }
             }
 
@@ -129,7 +137,7 @@ body.products{
     }
 
     .show-images{
-        padding-left: 150px;
+
     }
 
     ul.images-list, ul.images-list li{
@@ -188,13 +196,14 @@ body.products{
 
     form a.preview-description-btn{
         position: absolute;
-        margin-left: 665px;
+        margin-left: 515px;
         margin-top: -208px;
     }
 
 }
 #preview-description{
-    margin-left: 150px;
+    margin-left: 0px;
+    margin-top: 0px;
     .markdown-content{
         margin-top: 10px;
         max-height: 400px;

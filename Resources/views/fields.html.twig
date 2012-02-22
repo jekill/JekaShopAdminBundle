@@ -1,0 +1,26 @@
+{% extends 'MopaBootstrapBundle:Form:fields.html.twig'%}
+
+{% block form_widget %}
+<div  {{ block('widget_container_attributes') }}>
+    {% if 'form' in form.get('types') and form.hasParent() == 0 %}
+    <div {{ block('widget_container_attributes') }}>
+        <fieldset>
+            {% if show_legend %}{{ block('form_legend') }}{% endif %}
+            {% endif %}
+            {{ block('field_rows') }}
+            {{ form_rest(form) }}
+            {% if 'form' in form.get('types') and form.hasParent() == 0 %}
+        </fieldset>
+    </div>
+    {% endif %}
+</div>
+{% endblock form_widget %}
+
+
+{% block collection_widget %}
+    {% if prototype is defined %}
+        {% set attr = attr|merge({'data-prototype': form_row(prototype) }) %}
+    {% endif %}
+    {{ block('form_widget') }}
+{% endblock collection_widget %}
+

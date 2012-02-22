@@ -6,7 +6,6 @@
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}"/>
 
     {% stylesheets filter="less,cssrewrite,?yui_css"
-       '@MopaBootstrapBundle/Resources/bootstrap/lib/bootstrap.less'
        '@JekaShopAdminBundle/Resources/public/css/admin.less'
     %}
     <link href="{{ asset_url }}" type="text/css" rel="stylesheet" media="screen"/>
@@ -15,7 +14,7 @@
     {% javascripts filter='?yui_js' debug=true
             'js/jquery-1.7.1.js'
             'js/jquery-ui-1.8.16.custom.min.js'
-            '@MopaBootstrapBundle/Resources/bootstrap/js/bootstrap-tabs.js'
+            '@MopaBootstrapBundle/Resources/bootstrap/js/bootstrap-tab.js'
             '@MopaBootstrapBundle/Resources/bootstrap/js/bootstrap-modal.js'
 
     %}
@@ -29,34 +28,33 @@
 <body class="{% block body_class%}{%endblock%}">
 
 
-<div class="topbar">
-  <div class="topbar-inner">
-    <div class="container-fluid">
-      <a class="brand" href="#">MyShop</a>
-
-      <ul class="nav">
-          <li><a href="#contact">{{'Dashboard'|trans}}</a></li>
-        <li class="active">
-            <a href="{{path('shop_admin_products')}}">{{'Products'|trans}}</a>
-        </li>
-        <li><a href="{{path('shop_admin_categories')}}">{{'Categories'|trans}}</a></li>
-        <li><a href="#contact">{{'Orders'|trans}} (<span class="alarm" style="color: #ff0000;">10</span>)</a></li>
-        <li><a href="#contact">{{'Users'|trans}}</a></li>
-          <li><a href="#contact">{{'Settings'|trans}}</a></li>
-      </ul>
-      <p class="pull-right">Logged in as <a href="#">username</a></p>
-
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="brand" href="#">MyShop</a>
+            <ul class="nav">
+                <li><a href="#contact">{{'Dashboard'|trans}}</a></li>
+                <li class="active">
+                    <a href="{{path('shop_admin_products')}}">{{'Products'|trans}}</a>
+                </li>
+                <li><a href="{{path('shop_admin_categories')}}">{{'Categories'|trans}}</a></li>
+                <li><a href="#contact">{{'Orders'|trans}} (<span class="alarm" style="color: #ff0000;">10</span>)</a>
+                </li>
+                <li><a href="#contact">{{'Users'|trans}}</a></li>
+                <li><a href="#contact">{{'Settings'|trans}}</a></li>
+            </ul>
+            <p class="pull-right">Logged in as <a href="#">username</a></p>
+        </div>
     </div>
-  </div>
 </div>
 
 <div class="container-fluid">
-
-    <div class="sidebar">
+    <div class="row-fluid">
+    <div class="span2 sidebar">
         {%block sidebar%}{%endblock%}
     </div>
 
-    <div class="content">
+    <div class="span10">
         {% block content%}
         {% endblock content%}
 
@@ -65,7 +63,19 @@
 
         </footer>
     </div>
+    </div>
 </div>
+<script type="text/javascript">
+    $(function(){
+        $('a.remove[rel!=""]').click(function(){
+           if (confirm('To delete this object'))
+           {
+               window.location.href=this.rel;
+           }
+            return false;
+        });
+    });
+</script>
 {% block javascripts%}{%endblock%}
 </body>
 </html>

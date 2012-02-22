@@ -4,15 +4,22 @@
 
 {% block content%}
 
+<h1>Products</h1>
+
+{% include 'JekaShopAdminBundle::_flash.html.twig'%}
+
 <div class="filter_tools">
-    Select category:
-    <select class="">
-        <option>All</option>
+    <select class="filter[category]">
+        {% for c in categories_tree%}
+        <option value="c.id" style="margin-left: {{(c.treeLevel==0)?0:(c.treeLevel-1)*20}}px">{{c.name}}</option>
+        {% endfor%}
     </select>
-    <input type="submit" value="Применить">
+    <input type="submit" value="Применить" class="btn">
 </div>
 
-<table class="zebra-striped condensed-table bordered-table list">
+
+
+<table class="table-striped table-condensed table-bordered list">
     <thead>
     <tr>
         <th class="checkbox"><a href="#">[+]</a></th>
@@ -23,40 +30,7 @@
     </thead>
     <tbody>
     {% for prod in pager.getCurrentPageResults()%}
-    <tr>
-        <td class="checkbox clickable">
-            <input type="checkbox" value="product_id[]" value="{{prod.id}}">
-        </td>
-        <td class="image">
-            <div class="preview">
-                {% if prod.previewImage%}
-                    <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}#images"><img src="{{prod.previewImage.src|apply_filter('prod_preview_small')}}"/></a>
-                    <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}#images">Всего: {{prod.images|length}}</a>
-                {% else%}
-                    <a class="noimages" href="{{path('shop_admin_product_edit',{'id':prod.id})}}#images">{{'has no images'|trans}}</a>
-                {% endif%}
-            </div>
-        </td>
-        <td class="name">
-            <div class="tools">
-                <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}">Edit</a>
-                | <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}">Disable</a>
-            </div>
-            <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}" class="title">{{prod.name}}</a>
-            <div class="categories">
-                <span class="h">Categories:</span>
-                <ul>
-                    {% for cat in prod.categories%}
-                    <li>{{cat.name}}</li>
-                    {% endfor%}
-                </ul>
-            </div>
-        </td>
-        <td class="price clickable">
-            {{prod.price}}
-        </td>
-
-    </tr>
+        {% include 'JekaShopAdminBundle:Products:_list_item.html.twig' with {'prod':prod}%}
     {% endfor%}
     </tbody>
 </table>
@@ -64,6 +38,7 @@
 <div class="pagination">
     {{ pagerfanta(pager,'twitter_bootstrap') }}
 </div>
+
 {% endblock content%}
 
 
@@ -73,3 +48,24 @@
 {% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig'%}
 
 {%endblock%}
+
+{% block javascripts%}
+<script type="text/javascript">
+    $(function(){
+       $("a.product-disable").live('click',function(){
+
+           var productId = $(this).parents('tr').attr('id').split("_")[1];
+            var data = {id:productId};
+           $(this).prepend('<i class="jk-process"></i>');
+           $.post("{{path("shop_admin_product_toggle")}}",data,function(result,status){
+                if ('success'==status)
+                {
+
+                    $("#tr_"+productId).after(result).remove();
+                }
+           });
+          return false;
+       });
+    });
+</script>
+{% endblock%}

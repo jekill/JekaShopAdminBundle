@@ -1,0 +1,32 @@
+<table class="table table-codensed features">
+{% for f in form.features%}
+{%set feature  = f.vars['value']%}
+<tr id="v_{{feature.id}}">
+    <th style="vertical-align: top;text-align: right; width:100px; ">{{f.vars['value'].type}}:</th>
+    <td style="width: 200px;" class="name">{{f.vars['value'].name}}</td>
+    <td>
+        <a href="#" class="edit btn" rel="{{feature.id}}"><i class="icon-edit"></i> edit</a>
+        &nbsp;&nbsp;
+        <a href="#" class="remove" rel="{{path('shop_admin_remove_feature',{'id':feature.id})}}"><i class="icon-remove"></i> remove</a>
+        &nbsp;&nbsp;
+        <a href="#" class="remove" rel="{{path('shop_admin_remove_feature_all',{'product_id':product.id,'type':feature.type})}}"><i class="icon-remove"></i> remove all</a>
+    </td>
+</tr>
+<tr id="e_{{feature.id}}" style="display: none;">
+    <td colspan="3">
+        {{form_widget(f)}}
+        <a href="#" class="btn">Ok</a>
+    </td>
+</tr>
+
+{% endfor%}
+</table>
+<script type="text/javascript">
+    $(function(){
+       $('.features a.edit').click(function(){
+           $('#v_'+this.rel).hide();
+           $('#e_'+this.rel).show();
+           return false;
+       });
+    });
+</script>

@@ -1,30 +1,47 @@
 <div class="show-images">
-<div class="help">The first image is preview image</div>
-<br/>
-<ul class="images-list" >
-    {% for image in product.imagesOrderedArray%}
+    <div class="help">The first image is preview image</div>
+    <br/>
+    <ul class="images-list">
+        {% for image in product.imagesOrderedArray%}
         <li id="image_{{image.id}}">
             <div class="move">&#8596;</div>
             <img src="{{image.src|apply_filter('prod_thumb')}}"/>
+
             <div class="tools">
                 <a href="#" class="remove">{{'remove'|trans}}</a><br/>
                 <a href="{{image.src}}" target="_blank" class="realsize image">{{'real size'|trans}}</a> |
-                <a href="{{image.src|apply_filter('prod_preview')}}" rel="prettyImage" class="thumb image">{{'main thumb'|trans}}</a>
+                <a href="{{image.src|apply_filter('prod_preview')}}" rel="prettyImage"
+                   class="thumb image">{{'main thumb'|trans}}</a>
             </div>
         </li>
-    {% endfor%}
-</ul>
-    <script type="text/javascript">
-        $(function(){
-           $('.images-list')
-                   .sortable({
-                       handle:'.move',
-                       update:function(event,ui){
-                           var data = $('.images-list').sortable('serialize', {});
-                           $.post('{{path('shop_admin_images_sort')}}',data,function(){});
+        {% endfor%}
+    </ul>
 
-                       }
-                   }).disableSelection();
+    <script type="text/javascript">
+        $(function () {
+            $('.images-list')
+                    .sortable({
+                        handle:'.move',
+                        update:function (event, ui) {
+                            var data = $('.images-list').sortable('serialize', {});
+                            $.post('{{path('shop_admin_images_sort')}}', data, function () {
+                            });
+
+                        }
+                    }).disableSelection();
+            $('.images-list a.remove').click(function () {
+                if (confirm('Remove this image?')) {
+                    var $li = $(this).parents('li');
+                    var imageId = $li.attr('id').split('_')[1];
+                    $.get('{{path('shop_admin_product_image_remove',{'product_id':product.id})}}?image_id='+imageId,function(data,status){
+                        if(status=='success')
+                        {
+                            $li.remove();
+                        }
+                    });
+                }
+                return false;
+            });
         });
     </script>
 </div>

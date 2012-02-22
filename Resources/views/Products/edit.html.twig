@@ -13,42 +13,66 @@
 {% endif%}
 
 {% include 'JekaShopAdminBundle::_flash.html.twig'%}
+<div class="tabbable">
+    <ul class="nav nav-tabs tabs">
+        <li class="active"><a href="#basic" data-toggle="tab">Basic</a></li>
+        <li><a href="#images" data-toggle="tab">Images ({{product.images|length}})</a></li>
+        <li><a href="#features" data-toggle="tab">{{'Features'|trans}}</a></li>
+        <li><a href="#options" data-toggle="tab">{{'Options'|trans}}</a></li>
+    </ul>
 
-<ul class="tabs">
-    <li class="active"><a href="#basic">Basic</a></li>
-    <li><a href="#images">Images ({{product.images|length}})</a></li>
-    <li><a href="#options">{{'Options and Features'|trans}}</a></li>
-</ul>
 
-{{form_errors(form)}}
-<form action="{{ path('shop_admin_product_'~(product.id?'edit':'new'),{'id':product.id}) }}" {{ form_enctype(form) }} method="POST" class="product_edit">
-    {{ form_row(form._token) }}
-    <div class="tab-content">
-        <fieldset id="basic" class="tab-pane active">
-            <legend>{{'Basic'|trans}}</legend>
-            {% include 'JekaShopAdminBundle:Products:_fields_basic.html.twig' %}
-        </fieldset>
-        <fieldset id="images" class="tab-pane">
-            <legend>{{'Images'|trans}}</legend>
-            {% render 'JekaShopAdminBundle:Products:showImages' with {'product':product} %}
-            {{form_row(form.uploaded_image)}}
-        </fieldset>
-        <fieldset id="options" class="tab-pane">
-            <legend>{{'Options and Features'|trans}}</legend>
-            Disabled
-            {#{{ form_row(form.features) }} <a href="#" class="addFieldLink" id="features_link">Add Feature</a>#}
+    {{form_errors(form)}}
+    <form action="{{ path('shop_admin_product_'~(product.id?'edit':'new'),{'id':product.id}) }}" {{ form_enctype(form) }}
+          method="POST" class="product_edit">
+        {{ form_row(form._token) }}
+
+        <div class="tab-content">
+            <fieldset id="basic" class="tab-pane active">
+                <legend>{{'Basic'|trans}}</legend>
+                {% include 'JekaShopAdminBundle:Products:_fields_basic.html.twig' %}
+                {#{{ form_row(form.identifiers) }} <a href="#" class="addFieldLink" id="identifiers_identifiers_link" />Add Identifier</a>#}
+            </fieldset>
+
+
+            <fieldset id="images" class="tab-pane">
+                <legend>{{'Images'|trans}}</legend>
+                {% render 'JekaShopAdminBundle:Products:showImages' with {'product':product} %}
+                {{form_row(form.uploaded_image)}}
+            </fieldset>
+            <fieldset id="features" class="tab-pane">
+                <legend>{{'Features'|trans}}</legend>
+                <div class="form-horizontal">
+                {% include 'JekaShopAdminBundle:Products:_features.html.twig'%}
+                </div>
+
             {#{{ form_row(form.identifiers) }} <a href="#" class="addFieldLink" id="identifiers_identifiers_link" />Add Identifier</a>#}
             {#{{ form_row(form.options) }} <a href="#" class="addFieldLink" id="identifiers_options_options_link" />Add Options</a>#}
             {#{{form_rest(form)}}#}
 
-        </fieldset>
-    </div>
 
-    <div class="actions">
-        <input type="submit" class="btn primary" value="{{'Save'|trans}}">
-    </div>
+            </fieldset>
+            <fieldset id="options" class="tab-pane">
+                <legend>{{'Options'|trans}}</legend>
+                <div class="form-horizontal">
+                {% include 'JekaShopAdminBundle:Products:_options.html.twig'%}
+                {#{{form_rest(form)}}#}
+                </div>
+            </fieldset>
+        </div>
 
-</form>
+
+        <div class="form-actions">
+            <input type="submit" class="btn" value="{{'Save'|trans}}">
+
+            {% if product.id%}
+                <br/><br/>
+                <a class="remove" href="#" rel="{{path('shop_admin_remove',{'id':product.id})}}">Remove</a>
+            {% endif%}
+        </div>
+
+    </form>
+</div>
 
 {% endblock content%}
 
@@ -62,21 +86,21 @@
 <script type="text/javascript">
 
     $(function () {
-        $('.tabs').tabs();
+        $('.tabs').tab();
 
         if (window.location.hash != "") {
-
             $(".tabs a[href='" + window.location.hash + "']").click();
         }
 
 
         function add(collection) {
             var collectionName = '#vespolina_product_' + collection;
-            //alert(collectionName);
+//            alert(collectionName);
             var collectionHolder = $(collectionName);
             var prototype = collectionHolder.attr('data-prototype');
-            //alert(prototype);
-            form = prototype.replace(/\$\$name\$\$/g, collectionHolder.children().length);
+//            alert(prototype);
+            form = prototype.replace(/\$\$group\$\$/g, collectionHolder.children().length);
+
             collectionHolder.append(form);
         }
 

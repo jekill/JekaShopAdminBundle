@@ -32,8 +32,13 @@ class ProductsController extends Controller
         $pager->setMaxPerPage(30);
         $pager->setCurrentPage($curr_page);
 
+        /** @var $cm \Jeka\CategoryBundle\Document\CategoryManager */
+        $cm = $this->get('jeka.category_manager');
+        $categories_tree = $cm->getTreeList();
+
         return array(
-            'pager' => $pager
+            'pager' => $pager,
+            'categories_tree' => $categories_tree
         );
 
 
@@ -76,7 +81,7 @@ class ProductsController extends Controller
      */
     public function newAction()
     {
-        $product = new Product();
+        $product = $this->get('vespolina.product_manager')->createProduct();
         return $this->editAction($product);
     }
 
@@ -99,7 +104,9 @@ class ProductsController extends Controller
         else {
             /** @var $product Product */
             $product = $product_manager->findProductById($id);
-
+            if (!$product) {
+                throw $this->createNotFoundException();
+            }
         }
 
         /** @var $form \Symfony\Component\Form\Form */
@@ -113,11 +120,8 @@ class ProductsController extends Controller
             if ($form->isValid()) {
                 $product_manager->updateProduct($product);
 
-                //print_r($req->files);exit;
                 /** @var $uploaded_image \Symfony\Component\HttpFoundation\File\UploadedFile */
-                if ($uploaded_image = $product->getUploadedImage())
-                {
-                    //var_dump($uploaded_image->getPathname());exit;
+                if ($uploaded_image = $product->getUploadedImage()) {
                     /** @var $im \Jeka\ImageBundle\Document\ImageManager */
                     $im = $this->get('jeka.image_manager');
                     $image = $im->createImageFromFile($uploaded_image->getPathname());
@@ -125,7 +129,6 @@ class ProductsController extends Controller
                     $product->addImages($image);
                     $product_manager->updateProduct($product);
                 }
-
 
                 /** @var $session \Symfony\Component\HttpFoundation\Session */
                 $session = $this->get('session');
@@ -136,9 +139,143 @@ class ProductsController extends Controller
             }
         }
 
-        return $this->render('JekaShopAdminBundle:Products:edit.html.twig',array(
+        return $this->render('JekaShopAdminBundle:Products:edit.html.twig', array(
             'form' => $form->createView(),
             'product' => $product
         ));
     }
+
+    /**
+     * @Route("/products/{product_id}/imageRemove", name="shop_admin_product_image_remove")
+     */
+    function imageRemoveAction($product_id)
+    {
+        /** @var $im \Jeka\ImageBundle\Document\ImageManager */
+        /** @var $pm \Jeka\ShopBundle\Document\ProductManager */
+        $pm = $this->get('vespolina.product_manager');
+        $product = $pm->findProductById($product_id);
+        if (!$product) {
+            throw $this->createNotFoundException();
+        }
+        $im = $this->get('jeka.image_manager');
+        $image = $im->findImageById($this->getRequest()->get('image_id'));
+        if (!$image) {
+            throw $this->createNotFoundException();
+        }
+
+        $product->removeImage($image);
+        $im->remove($image);
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            return new Response('success');
+        }
+
+        return $this->redirect($this->generateUrl('shop_admin_product_edit', array(
+            'id' => $product->id
+        )) . "#images");
+
+    }
+
+    /**
+     * @Route("/products/{id}/remove", name="shop_admin_remove")
+     */
+    function removeAction($id)
+    {
+        /** @var $pm \Jeka\ShopBundle\Document\ProductManager */
+        $pm = $this->get('vespolina.product_manager');
+        $product = $pm->findProductById($id);
+
+        if (!$product) {
+            throw $this->createNotFoundException();
+        }
+
+        $pm->removeProduct($product);
+        $this->getRequest()->getSession()->setFlash('success', 'The product was removed');
+        return $this->redirect($this->generateUrl('shop_admin_products'));
+    }
+
+    /**
+     * @Route("/products/feature/{id}/remove", name="shop_admin_remove_feature")
+     */
+    function removeFeatureAction($id)
+    {
+        /** @var $pm \Jeka\ShopBundle\Document\ProductManager */
+        $pm = $this->get('vespolina.product_manager');
+
+        $product = $pm->findProductByFeatureId($id);
+        if (!$product) {
+            throw $this->createNotFoundException();
+        }
+        $pm->removeFeature($id);
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            return new Response('success', 'text/plain');
+        }
+        //throw new \Exception();
+        return $this->redirect($this->generateUrl('shop_admin_product_edit', array('id' => $product->getId())) . '#options');
+
+    }
+
+    /**
+     * @Route("/products/feature/{product_id}/{type}/removeAll", name="shop_admin_remove_feature_all")
+     */
+    function removeFeatureAllAction($product_id, $type)
+    {
+        /** @var $pm \Jeka\ShopBundle\Document\ProductManager */
+        $pm = $this->get('vespolina.product_manager');
+        $pm->removeFeatureAll($type);
+
+        $product = $pm->findProductById($product_id);
+        if (!$product) {
+            throw $this->createNotFoundException();
+        }
+
+        $pm->removeFeatureAll($type);
+
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            return new Response('success', 'text/plain');
+        }
+        //throw new \Exception();
+        return $this->redirect($this->generateUrl('shop_admin_product_edit', array('id' => $product->getId())) . '#options');
+    }
+
+
+    /**
+     * @Route("/products/disableToggle",name="shop_admin_product_toggle")
+     * @param $id
+     * @Template
+     */
+    function disableToggleAction()
+    {
+        $pm = $this->_getProductManager();
+        $product = $pm->findProductById($this->getRequest()->get('id'));
+
+        if (!$product) throw $this->createNotFoundException();
+
+        //$pm->disableProduct($product,true);
+        $pm->disableToggleProduct($product);
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            //return new Response('success');
+            return array(
+              'product'=>$product
+            );
+        }
+
+        $this->getRequest()->getSession()->setFlash('success', sprintf('The product "%s" was "%s"',
+            $product->getName(),
+            $product->getDisabled() ? 'disabled' : 'enabled'));
+
+        return $this->redirect($this->generateUrl('shop_admin_products'));
+
+    }
+
+
+    /**
+     * @return \Jeka\ShopBundle\Document\ProductManager
+     */
+    private function _getProductManager()
+    {
+        /** @var $pm \Jeka\ShopBundle\Document\ProductManager */
+        $pm = $this->get('vespolina.product_manager');
+        return $pm;
+    }
+
 }

@@ -1,0 +1,36 @@
+<tr id="tr_{{prod.id}}">
+    <td class="jk-checkbox clickable">
+        <input type="checkbox" value="product_id[]" value="{{prod.id}}">
+    </td>
+    <td class="image">
+        <div class="preview">
+            {% if prod.previewImage%}
+                <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}#images"><img src="{{prod.previewImage.src|apply_filter('prod_preview_small')}}"/></a>
+                <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}#images">Всего: {{prod.images|length}}</a>
+            {% else%}
+                <a class="noimages" href="{{path('shop_admin_product_edit',{'id':prod.id})}}#images">{{'has no images'|trans}}</a>
+            {% endif%}
+        </div>
+    </td>
+    <td class="name">
+        <div class="tools">
+            <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}">Edit</a>
+            |
+            <a href="{{path('shop_admin_product_toggle',{'id':prod.id})}}" class="product-disable {{prod.disabled?'enabled':'disabled'}}">
+                {{prod.disabled?'Enable':'Disable'}}
+            </a>
+        </div>
+        <a href="{{path('shop_admin_product_edit',{'id':prod.id})}}" class="title">{{prod.name}}</a>
+        <div class="categories">
+            <span class="h">Categories:</span>
+            <ul>
+                {% for cat in prod.categories%}
+                <li>{{cat.name}}</li>
+                {% endfor%}
+            </ul>
+        </div>
+    </td>
+    <td class="price clickable">
+        {{prod.price}}
+    </td>
+</tr>

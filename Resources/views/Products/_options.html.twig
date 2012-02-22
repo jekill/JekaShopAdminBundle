@@ -1,0 +1,34 @@
+<table class="table" style="width: 700px;">
+    {% for o in form.options%}
+        {% set option = o.vars['value']%}
+        <tr>
+            <td>
+                {{option.name}}
+            </td>
+            <td>
+                {{option.required? 'required':''}}
+            </td>
+            <td>
+                <a href="#"><i class="icon-remove"></i> remove</a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" style="padding-left: 30px;">
+                <table class="">
+                {% for oi in o.options%}
+                    {% set oi_object=oi.vars['value']%}
+                    <tr>
+                        <td>{{oi_object.value}}</td>
+                        <td>
+                            <a href="#"><i class="icon-remove"></i> remove</a>
+                        </td>
+                    </tr>
+                {% endfor%}
+                </table>
+                <a href="#">Add value</a>
+            </td>
+        </tr>
+    {% endfor%}
+</table>
+{#{{form_row(form.options)}}#}
+<a href="#" class="addFieldLink" id="options_link"/>Add Options</a>

@@ -1,8 +1,8 @@
 <a href="#" class="btn preview-description-btn">Preview</a>
 
-<div id="preview-description" class="modal hide fade">
+<div id="preview-description" class="modal" style="display: none;">
   <div class="modal-header">
-    <a href="#" class="close">&times;</a>
+      <a class="close" data-dismiss="modal">×</a>
     <h3>{{"Product's description"|trans}}</h3>
   </div>
   <div class="modal-body">
@@ -13,7 +13,7 @@
           </div></div>
   </div>
   <div class="modal-footer">
-    <a href="#" class="btn primary close">{{'Close'|trans}}</a>
+    <a href="#" data-dismiss="modal" class="btn">{{'Close'|trans}}</a>
   </div>
 </div>
 
@@ -25,12 +25,13 @@ $(function(){
        var conv  = new Markdown.Converter();
         $('#preview-description .markdown-content').html(conv.makeHtml($("#vespolina_product_description").val()));
         $("#preview-description").modal({
-                    keyboard: true
+                    keyboard: true,
+                    backdrop:false
                 });
-        $("#preview-description").modal('show');
+        //$("#preview-description").modal('show');
         return false;
     });
-    $("#preview-description").modal({keyboard: true});
+
 
 });
 </script>
