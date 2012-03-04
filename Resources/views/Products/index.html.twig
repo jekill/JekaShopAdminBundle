@@ -9,15 +9,25 @@
 {% include 'JekaShopAdminBundle::_flash.html.twig'%}
 
 <div class="filter_tools">
-    <select class="filter[category]">
-        {% for c in categories_tree%}
-        <option value="c.id" style="margin-left: {{(c.treeLevel==0)?0:(c.treeLevel-1)*20}}px">{{c.name}}</option>
-        {% endfor%}
-    </select>
-    <input type="submit" value="Применить" class="btn">
+    <form class="form-inline" action="{{path('shop_admin_products')}}" method="get">
+        {{form_errors(filter_form)}}
+        <select name="filter[category]">
+            {% for c in categories_tree%}
+            <option {{filter_form.vars.value.category==c.id?'selected':''}} value="{{c.slug=='root'?'':c.id}}" style="margin-left: {{(c.treeLevel==0)?0:(c.treeLevel-1)*20}}px">{{c.name}}</option>
+            {% endfor%}
+        </select>
+
+
+        &nbsp;&nbsp;{{form_widget(filter_form.disabled)}} {{form_label(filter_form.disabled)}}
+
+        &nbsp;&nbsp;<input type="submit" value="Применить" class="btn">
+    </form>
 </div>
 
 
+<div class="pagination">
+    {{ pagerfanta(pager,'twitter_bootstrap') }}
+</div>
 
 <table class="table-striped table-condensed table-bordered list">
     <thead>
@@ -30,7 +40,7 @@
     </thead>
     <tbody>
     {% for prod in pager.getCurrentPageResults()%}
-        {% include 'JekaShopAdminBundle:Products:_list_item.html.twig' with {'prod':prod}%}
+    {% include 'JekaShopAdminBundle:Products:_list_item.html.twig' with {'prod':prod}%}
     {% endfor%}
     </tbody>
 </table>
@@ -42,7 +52,6 @@
 {% endblock content%}
 
 
-
 {%block sidebar%}
 
 {% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig'%}
@@ -51,21 +60,20 @@
 
 {% block javascripts%}
 <script type="text/javascript">
-    $(function(){
-       $("a.product-disable").live('click',function(){
+    $(function () {
+        $("a.product-disable").live('click', function () {
 
-           var productId = $(this).parents('tr').attr('id').split("_")[1];
+            var productId = $(this).parents('tr').attr('id').split("_")[1];
             var data = {id:productId};
-           $(this).prepend('<i class="jk-process"></i>');
-           $.post("{{path("shop_admin_product_toggle")}}",data,function(result,status){
-                if ('success'==status)
-                {
+            $(this).prepend('<i class="jk-process"></i>');
+            $.post("{{path("shop_admin_product_toggle")}}", data, function (result, status) {
+                if ('success' == status) {
 
-                    $("#tr_"+productId).after(result).remove();
+                    $("#tr_" + productId).after(result).remove();
                 }
-           });
-          return false;
-       });
+            });
+            return false;
+        });
     });
 </script>
 {% endblock%}

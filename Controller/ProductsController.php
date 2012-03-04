@@ -22,7 +22,58 @@ class ProductsController extends Controller
     {
         /** @var $pm \Jeka\ShopBundle\Document\ProductManager */
         $pm = $this->get('vespolina.product_manager');
+
+        /** @var $cm \Jeka\CategoryBundle\Document\CategoryManager */
+        $cm = $this->get('jeka.category_manager');
+        $categories_tree = $cm->getTreeList();
+
         $queryBuilder = $pm->createFindAllQuery();
+
+        $session = $this->getRequest()->getSession();
+
+        $filter_data = $session->get('products_filter', array());
+        $category_choices = array();
+        foreach ($categories_tree as $c)
+        {
+            //$category_choices= array($c->getId()=>$c->getName());
+            $id = $c->getSlug() == 'root' ? '' : $c->getId();
+            $category_choices[$id] = $c->getName();
+        }
+        unset($c);
+
+        //$form = $this->createForm('q',null,array());
+
+        $filter_form = $this->get('form.factory')->createNamedBuilder('form', 'filter', $filter_data,array('csrf_protection'=>false))
+            ->add('category', 'choice', array('choices' => $category_choices))
+            ->add('disabled', 'checkbox', array('label' => 'Show disabled', 'required' => false))
+            ->add('name','text',array('required'=>false))
+            ->getForm();
+
+        if ($this->getRequest()->get('filter')) {
+            $filter_form->bindRequest($this->getRequest());
+            if ($filter_form->isValid())
+            {
+                $filter_data = $filter_form->getData();
+                $session->set('products_filter', $filter_data);
+            }
+
+        }
+
+        if (isset($filter_data['category']) && trim($filter_data['category'])!='') {
+            $queryBuilder->field('categories.id')->equals($filter_data['category']);
+        }
+
+        if (!isset($filter_data['disabled']) || $filter_data['disabled'] == false) {
+            $queryBuilder->field('disabled')->equals(false);
+        }
+
+
+        if (isset($filter_data['name']))
+        {
+
+            $queryBuilder->field('name')->equals(array('$regex'=>"{$filter_data['name']}"));
+        }
+
         $req = $this->getRequest();
         $curr_page = $req->get('page', 1);
         if ($curr_page < 1) $curr_page = 1;
@@ -32,13 +83,11 @@ class ProductsController extends Controller
         $pager->setMaxPerPage(30);
         $pager->setCurrentPage($curr_page);
 
-        /** @var $cm \Jeka\CategoryBundle\Document\CategoryManager */
-        $cm = $this->get('jeka.category_manager');
-        $categories_tree = $cm->getTreeList();
 
         return array(
             'pager' => $pager,
-            'categories_tree' => $categories_tree
+            'categories_tree' => $categories_tree,
+            'filter_form' => $filter_form->createView()
         );
 
 
@@ -255,7 +304,7 @@ class ProductsController extends Controller
         if ($this->getRequest()->isXmlHttpRequest()) {
             //return new Response('success');
             return array(
-              'product'=>$product
+                'product' => $product
             );
         }
 

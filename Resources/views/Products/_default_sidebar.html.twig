@@ -7,9 +7,9 @@
         <h5>Поиск</h5>
 
         <form action="{{path('shop_admin_products')}}" method="get">
-            <input class="q name" type="text" name="name" value="" placeholder="{{'Product name'|trans}}">
+            {#<input class="q name" type="text" name="filter[name]" value="" placeholder="{{'Product name'|trans}}">#}
+            {{form_widget(filter_form.name,{'attr':{'class':'q name','placeholder':('Product name'|trans)}})}}
             <input class="btn" type="submit" value="Search">
-
         </form>
     </div>
 
