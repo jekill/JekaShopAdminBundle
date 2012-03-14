@@ -40,15 +40,14 @@ class ProductsController extends Controller
 
         if ($this->getRequest()->get('filter')) {
             $filter_form->bindRequest($this->getRequest());
-            if ($filter_form->isValid())
-            {
+            if ($filter_form->isValid()) {
                 $filter_data = $filter_form->getData();
                 $session->set('products_filter', $filter_data);
             }
 
         }
 
-        if (isset($filter_data['category']) && trim($filter_data['category'])!='') {
+        if (isset($filter_data['category']) && trim($filter_data['category']) != '') {
             $queryBuilder->field('categories.id')->equals($filter_data['category']);
         }
 
@@ -57,10 +56,9 @@ class ProductsController extends Controller
         }
 
 
-        if (isset($filter_data['name']))
-        {
+        if (isset($filter_data['name'])) {
 
-            $queryBuilder->field('name')->equals(array('$regex'=>"{$filter_data['name']}"));
+            $queryBuilder->field('name')->equals(array('$regex' => "{$filter_data['name']}"));
         }
 
         $req = $this->getRequest();
@@ -180,7 +178,7 @@ class ProductsController extends Controller
         return $this->render('JekaShopAdminBundle:Products:edit.html.twig', array(
             'form' => $form->createView(),
             'product' => $product,
-            'filter_form'=>$this->_createFilterForm()->createView()
+            'filter_form' => $this->_createFilterForm()->createView()
         ));
     }
 
@@ -318,7 +316,7 @@ class ProductsController extends Controller
     }
 
 
-    private function _createFilterForm($filter_data=array())
+    private function _createFilterForm($filter_data = array())
     {
         $cm = $this->get('jeka.category_manager');
         $categories_tree = $cm->getTreeList();
@@ -330,10 +328,10 @@ class ProductsController extends Controller
             $category_choices[$id] = $c->getName();
         }
         unset($c);
-       return  $this->get('form.factory')->createNamedBuilder('form', 'filter', $filter_data,array('csrf_protection'=>false))
+        return $this->get('form.factory')->createNamedBuilder('form', 'filter', $filter_data, array('csrf_protection' => false))
             ->add('category', 'choice', array('choices' => $category_choices))
             ->add('disabled', 'checkbox', array('label' => 'Show disabled', 'required' => false))
-            ->add('name','text',array('required'=>false))
+            ->add('name', 'text', array('required' => false))
             ->getForm();
     }
 }
