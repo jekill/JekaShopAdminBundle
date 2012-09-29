@@ -1,8 +1,8 @@
 <?php
 namespace Jeka\ShopAdminBundle\Controller;
 
-
 use \Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\Form;
 use \Application\Vespolina\ProductBundle\Form\Type\ProductFormExtendedType;
 use \Application\Vespolina\ProductBundle\Document\Product;
 use \Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -24,60 +24,57 @@ class ProductsController extends Controller
         $pm = $this->get('vespolina.product_manager');
 
         /** @var $cm \Jeka\CategoryBundle\Document\CategoryManager */
-        $cm = $this->get('jeka.category_manager');
+        $cm              = $this->get('jeka.category_manager');
         $categories_tree = $cm->getTreeList();
 
         $queryBuilder = $pm->createFindAllQuery();
 
         $session = $this->getRequest()->getSession();
 
-        $filter_data = $session->get('products_filter', array());
-
+        $filterData = $session->get('products_filter', array());
 
         //$form = $this->createForm('q',null,array());
 
-        $filter_form = $this->_createFilterForm($filter_data);
+        /** @var $filterForm  Form*/
+        $filterForm = $this->_createFilterForm($filterData);
+//        var_dump($filterForm->createView()->getVars());exit;
 
         if ($this->getRequest()->get('filter')) {
-            $filter_form->bindRequest($this->getRequest());
-            if ($filter_form->isValid()) {
-                $filter_data = $filter_form->getData();
-                $session->set('products_filter', $filter_data);
+            $filterForm->bindRequest($this->getRequest());
+            if ($filterForm->isValid()) {
+                $filterData = $filterForm->getData();
+                $session->set('products_filter', $filterData);
             }
-
         }
 
-        if (isset($filter_data['category']) && trim($filter_data['category']) != '') {
-            $queryBuilder->field('categories.id')->equals($filter_data['category']);
+        if (isset($filterData['category']) && trim($filterData['category']) != '') {
+            $queryBuilder->field('categories.id')->equals($filterData['category']);
         }
 
-        if (!isset($filter_data['disabled']) || $filter_data['disabled'] == false) {
+        if ((!isset($filterData['disabled']) || $filterData['disabled'] == false) && !isset($filterData['name'])) {
             $queryBuilder->field('disabled')->equals(false);
         }
 
-
-        if (isset($filter_data['name'])) {
-
-            $queryBuilder->field('name')->equals(array('$regex' => "{$filter_data['name']}"));
+        if (isset($filterData['name'])) {
+            $queryBuilder->field('name')->equals(array('$regex' => "{$filterData['name']}", '$options'=> 'i'));
         }
 
-        $req = $this->getRequest();
+        $req       = $this->getRequest();
         $curr_page = $req->get('page', 1);
-        if ($curr_page < 1) $curr_page = 1;
+        if ($curr_page < 1) {
+            $curr_page = 1;
+        }
 
         $adapter = new \Pagerfanta\Adapter\DoctrineODMMongoDBAdapter($queryBuilder);
-        $pager = new \Pagerfanta\Pagerfanta($adapter);
+        $pager   = new \Pagerfanta\Pagerfanta($adapter);
         $pager->setMaxPerPage(30);
         $pager->setCurrentPage($curr_page);
 
-
         return array(
-            'pager' => $pager,
+            'pager'           => $pager,
             'categories_tree' => $categories_tree,
-            'filter_form' => $filter_form->createView()
+            'filter_form'     => $filterForm->createView()
         );
-
-
     }
 
     /**
@@ -102,13 +99,13 @@ class ProductsController extends Controller
         $image_manager = $this->get('jeka.image_manager');
         /** @var $d_manager \Doctrine\ODM\MongoDB\DocumentManager */
         $d_manager = $this->get('doctrine.odm.mongodb.document_manager');
-        foreach ($images as $index => $id)
-        {
+        foreach ($images as $index => $id) {
             $image = $image_manager->findImageById($id);
             $image->setPos($index);
             $d_manager->persist($image);
         }
         $d_manager->flush();
+
         return new Response('OK', 200, array('Content-type' => 'text/plain'));
     }
 
@@ -118,6 +115,7 @@ class ProductsController extends Controller
     public function newAction()
     {
         $product = $this->get('vespolina.product_manager')->createProduct();
+
         return $this->editAction($product);
     }
 
@@ -132,12 +130,10 @@ class ProductsController extends Controller
         /** @var $product_manager \Jeka\ShopBundle\Document\ProductManager */
         $product_manager = $this->get('vespolina.product_manager');
 
-
         if (is_object($id)) {
             $product = $id;
-            $id = $product->getId();
-        }
-        else {
+            $id      = $product->getId();
+        } else {
             /** @var $product Product */
             $product = $product_manager->findProductById($id);
             if (!$product) {
@@ -159,7 +155,7 @@ class ProductsController extends Controller
                 /** @var $uploaded_image \Symfony\Component\HttpFoundation\File\UploadedFile */
                 if ($uploaded_image = $product->getUploadedImage()) {
                     /** @var $im \Jeka\ImageBundle\Document\ImageManager */
-                    $im = $this->get('jeka.image_manager');
+                    $im    = $this->get('jeka.image_manager');
                     $image = $im->createImageFromFile($uploaded_image->getPathname());
                     $image->setPos(-1);
                     $product->addImages($image);
@@ -169,17 +165,21 @@ class ProductsController extends Controller
                 /** @var $session \Symfony\Component\HttpFoundation\Session */
                 $session = $this->get('session');
                 $session->setFlash('success', 'The product is saved successfully');
+
                 return $this->redirect(
                     $this->generateUrl('shop_admin_product_edit', array('id' => $product->getId()))
                 );
             }
         }
 
-        return $this->render('JekaShopAdminBundle:Products:edit.html.twig', array(
-            'form' => $form->createView(),
-            'product' => $product,
-            'filter_form' => $this->_createFilterForm()->createView()
-        ));
+        return $this->render(
+            'JekaShopAdminBundle:Products:edit.html.twig',
+            array(
+                'form'        => $form->createView(),
+                'product'     => $product,
+                'filter_form' => $this->_createFilterForm()->createView()
+            )
+        );
     }
 
     /**
@@ -189,12 +189,12 @@ class ProductsController extends Controller
     {
         /** @var $im \Jeka\ImageBundle\Document\ImageManager */
         /** @var $pm \Jeka\ShopBundle\Document\ProductManager */
-        $pm = $this->get('vespolina.product_manager');
+        $pm      = $this->get('vespolina.product_manager');
         $product = $pm->findProductById($product_id);
         if (!$product) {
             throw $this->createNotFoundException();
         }
-        $im = $this->get('jeka.image_manager');
+        $im    = $this->get('jeka.image_manager');
         $image = $im->findImageById($this->getRequest()->get('image_id'));
         if (!$image) {
             throw $this->createNotFoundException();
@@ -206,10 +206,14 @@ class ProductsController extends Controller
             return new Response('success');
         }
 
-        return $this->redirect($this->generateUrl('shop_admin_product_edit', array(
-            'id' => $product->id
-        )) . "#images");
-
+        return $this->redirect(
+            $this->generateUrl(
+                'shop_admin_product_edit',
+                array(
+                    'id' => $product->id
+                )
+            ) . "#images"
+        );
     }
 
     /**
@@ -218,7 +222,7 @@ class ProductsController extends Controller
     function removeAction($id)
     {
         /** @var $pm \Jeka\ShopBundle\Document\ProductManager */
-        $pm = $this->get('vespolina.product_manager');
+        $pm      = $this->get('vespolina.product_manager');
         $product = $pm->findProductById($id);
 
         if (!$product) {
@@ -227,6 +231,7 @@ class ProductsController extends Controller
 
         $pm->removeProduct($product);
         $this->getRequest()->getSession()->setFlash('success', 'The product was removed');
+
         return $this->redirect($this->generateUrl('shop_admin_products'));
     }
 
@@ -246,9 +251,9 @@ class ProductsController extends Controller
         if ($this->getRequest()->isXmlHttpRequest()) {
             return new Response('success', 'text/plain');
         }
+
         //throw new \Exception();
         return $this->redirect($this->generateUrl('shop_admin_product_edit', array('id' => $product->getId())) . '#options');
-
     }
 
     /**
@@ -270,6 +275,7 @@ class ProductsController extends Controller
         if ($this->getRequest()->isXmlHttpRequest()) {
             return new Response('success', 'text/plain');
         }
+
         //throw new \Exception();
         return $this->redirect($this->generateUrl('shop_admin_product_edit', array('id' => $product->getId())) . '#options');
     }
@@ -282,10 +288,12 @@ class ProductsController extends Controller
      */
     function disableToggleAction()
     {
-        $pm = $this->_getProductManager();
+        $pm      = $this->_getProductManager();
         $product = $pm->findProductById($this->getRequest()->get('id'));
 
-        if (!$product) throw $this->createNotFoundException();
+        if (!$product) {
+            throw $this->createNotFoundException();
+        }
 
         //$pm->disableProduct($product,true);
         $pm->disableToggleProduct($product);
@@ -296,12 +304,16 @@ class ProductsController extends Controller
             );
         }
 
-        $this->getRequest()->getSession()->setFlash('success', sprintf('The product "%s" was "%s"',
-            $product->getName(),
-            $product->getDisabled() ? 'disabled' : 'enabled'));
+        $this->getRequest()->getSession()->setFlash(
+            'success',
+            sprintf(
+                'The product "%s" was "%s"',
+                $product->getName(),
+                $product->getDisabled() ? 'disabled' : 'enabled'
+            )
+        );
 
         return $this->redirect($this->generateUrl('shop_admin_products'));
-
     }
 
 
@@ -312,23 +324,25 @@ class ProductsController extends Controller
     {
         /** @var $pm \Jeka\ShopBundle\Document\ProductManager */
         $pm = $this->get('vespolina.product_manager');
+
         return $pm;
     }
 
 
     private function _createFilterForm($filter_data = array())
     {
-        $cm = $this->get('jeka.category_manager');
-        $categories_tree = $cm->getTreeList();
+        $cm               = $this->get('jeka.category_manager');
+        $categories_tree  = $cm->getTreeList();
         $category_choices = array();
-        foreach ($categories_tree as $c)
-        {
+        foreach ($categories_tree as $c) {
             //$category_choices= array($c->getId()=>$c->getName());
-            $id = $c->getSlug() == 'root' ? '' : $c->getId();
+            $id                    = $c->getSlug() == 'root' ? '' : $c->getId();
             $category_choices[$id] = $c->getName();
         }
+
         unset($c);
-        return $this->get('form.factory')->createNamedBuilder('form', 'filter', $filter_data, array('csrf_protection' => false))
+
+        return $this->get('form.factory')->createNamedBuilder('filter', 'form', $filter_data, array('csrf_protection' => false))
             ->add('category', 'choice', array('choices' => $category_choices))
             ->add('disabled', 'checkbox', array('label' => 'Show disabled', 'required' => false))
             ->add('name', 'text', array('required' => false))

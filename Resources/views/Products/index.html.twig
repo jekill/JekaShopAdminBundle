@@ -1,79 +1,79 @@
-{% extends 'JekaShopAdminBundle::admin-layout.html.twig'%}
+{% extends 'JekaShopAdminBundle::admin-layout.html.twig' %}
 
-{% block body_class%}products{% endblock%}
+{% block body_class %}products{% endblock %}
 
-{% block content%}
+{% block content %}
 
-<h1>Products</h1>
+    <h1>Products</h1>
 
-{% include 'JekaShopAdminBundle::_flash.html.twig'%}
+    {% include 'JekaShopAdminBundle::_flash.html.twig' %}
 
-<div class="filter_tools">
-    <form class="form-inline" action="{{path('shop_admin_products')}}" method="get">
-        {{form_errors(filter_form)}}
-        <select name="filter[category]">
-            {% for c in categories_tree%}
-            <option {{filter_form.vars.value.category==c.id?'selected':''}} value="{{c.slug=='root'?'':c.id}}" style="margin-left: {{(c.treeLevel==0)?0:(c.treeLevel-1)*20}}px">{{c.name}}</option>
-            {% endfor%}
-        </select>
-
-
-        &nbsp;&nbsp;{{form_widget(filter_form.disabled)}} {{form_label(filter_form.disabled)}}
-
-        &nbsp;&nbsp;<input type="submit" value="Применить" class="btn">
-    </form>
-</div>
+    <div class="filter_tools">
+        <form class="form-inline" action="{{ path('shop_admin_products') }}" method="get">
+            {{ form_errors(filter_form) }}
+            <select name="filter[category]">
+                {% for c in categories_tree %}
+                    <option {{ (filter_form.vars.value.category is defined and filter_form.vars.value.category==c.id)?'selected':'' }} value="{{ c.slug=='root'?'':c.id }}" style="margin-left: {{ (c.treeLevel==0)?0:(c.treeLevel-1)*20 }}px">{{ c.name }}</option>
+                {% endfor %}
+            </select>
 
 
-<div class="pagination">
-    {{ pagerfanta(pager,'twitter_bootstrap') }}
-</div>
+            &nbsp;&nbsp;{{ form_widget(filter_form.disabled) }} {{ form_label(filter_form.disabled) }}
 
-<table class="table-striped table-condensed table-bordered list">
-    <thead>
-    <tr>
-        <th class="checkbox"><a href="#">[+]</a></th>
-        <th class="image">{{'Image'|trans}}</th>
-        <th>{{'Product title'|trans}}</th>
-        <th class="price">{{'Price'|trans}}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for prod in pager.getCurrentPageResults()%}
-    {% include 'JekaShopAdminBundle:Products:_list_item.html.twig' with {'prod':prod}%}
-    {% endfor%}
-    </tbody>
-</table>
-
-<div class="pagination">
-    {{ pagerfanta(pager,'twitter_bootstrap') }}
-</div>
-
-{% endblock content%}
+            &nbsp;&nbsp;<input type="submit" value="Применить" class="btn">
+        </form>
+    </div>
 
 
-{%block sidebar%}
+    <div class="pagination">
+        {{ pagerfanta(pager,'twitter_bootstrap') }}
+    </div>
 
-{% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig'%}
+    <table class="table-striped table-condensed table-bordered list">
+        <thead>
+        <tr>
+            <th class="checkbox"><a href="#">[+]</a></th>
+            <th class="image">{{ 'Image'|trans }}</th>
+            <th>{{ 'Product title'|trans }}</th>
+            <th class="price">{{ 'Price'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for prod in pager.getCurrentPageResults() %}
+            {% include 'JekaShopAdminBundle:Products:_list_item.html.twig' with {'prod':prod} %}
+        {% endfor %}
+        </tbody>
+    </table>
 
-{%endblock%}
+    <div class="pagination">
+        {{ pagerfanta(pager,'twitter_bootstrap') }}
+    </div>
 
-{% block javascripts%}
-<script type="text/javascript">
-    $(function () {
-        $("a.product-disable").live('click', function () {
+{% endblock content %}
 
-            var productId = $(this).parents('tr').attr('id').split("_")[1];
-            var data = {id:productId};
-            $(this).prepend('<i class="jk-process"></i>');
-            $.post("{{path("shop_admin_product_toggle")}}", data, function (result, status) {
-                if ('success' == status) {
 
-                    $("#tr_" + productId).after(result).remove();
-                }
+{% block sidebar %}
+
+    {% include 'JekaShopAdminBundle:Products:_default_sidebar.html.twig' %}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        $(function () {
+            $("a.product-disable").live('click', function () {
+
+                var productId = $(this).parents('tr').attr('id').split("_")[1];
+                var data = {id:productId};
+                $(this).prepend('<i class="jk-process"></i>');
+                $.post("{{path("shop_admin_product_toggle")}}", data, function (result, status) {
+                    if ('success' == status) {
+
+                        $("#tr_" + productId).after(result).remove();
+                    }
+                });
+                return false;
             });
-            return false;
         });
-    });
-</script>
-{% endblock%}
+    </script>
+{% endblock %}
